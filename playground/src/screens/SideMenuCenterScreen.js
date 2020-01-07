@@ -1,6 +1,7 @@
 const React = require('react');
 const Root = require('../components/Root');
-const Button = require('../components/Button')
+const Button = require('../components/Button');
+const Text = require('react-native');
 const Navigation = require('../services/Navigation');
 const {
   OPEN_LEFT_SIDE_MENU_BTN,
@@ -34,7 +35,7 @@ class SideMenuCenterScreen extends React.Component {
     if (buttonId === 'sideMenu') this.open('left');
   }
 
-  render() {
+  render() {    
     return (
       <Root componentId={this.props.componentId}>
         <Button label='Open Left' testID={OPEN_LEFT_SIDE_MENU_BTN} onPress={() => this.open('left')} />
@@ -43,11 +44,64 @@ class SideMenuCenterScreen extends React.Component {
     );
   }
 
-  open = (side) => Navigation.mergeOptions(this, {
-    sideMenu: {
-      [side]: { visible: true }
+  open = (side) => {
+
+    Navigation.setStackRoot(side, [
+      {
+        component: {
+          name: Screens.SideMenuLeft, 
+          id: Screens.SideMenuLeft,          
+          options: {     
+            topBar: {
+              leftButtons: [
+                {
+                  id: 'leftButtonCallback',
+                  text: 'Cancel',                                   
+                },
+              ],
+              rightButtons: [{
+                id: 'rightButtonCallback',
+                text: 'Action',                                
+              }],                
+              title: {                
+                text: `${side} title`,
+              },            
+            },            
+          },
+        },
+      },
+    ]);
+
+    let unsubPressedListener;
+    /**
+     * Remove event listener
+     */
+    const handleDismissSideMenu = () => {
+      unsubPressedListener.remove();
     }
-  });
+
+    /**
+     * Listen to click events of the buttons on the top bar of the side menu
+     */
+    unsubPressedListener = Navigation.events().registerNavigationButtonPressedListener(
+      ({ buttonId }) => {
+        if (buttonId === 'leftButtonCallback') {
+          console.log('Do something when left button is clicked');
+          handleDismissSideMenu();
+        }
+        if (buttonId === 'rightButtonCallback') {
+          console.log('Do something when right button is clicked');
+          handleDismissSideMenu();
+        }
+      },
+    );
+
+    Navigation.mergeOptions(this, {
+      sideMenu: {
+        [side]: { visible: true }
+      },    
+    });
+  }
 }
 
 module.exports = SideMenuCenterScreen;

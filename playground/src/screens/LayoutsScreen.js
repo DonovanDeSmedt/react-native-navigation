@@ -10,7 +10,7 @@ const {
 } = require('../testIDs');
 const Screens = require('./Screens');
 const Navigation = require('../services/Navigation');
-const {stack} = require('../commons/Layouts');
+const {stack, component} = require('../commons/Layouts');
 
 class LayoutsScreen extends React.Component {
   static options() {
@@ -57,12 +57,12 @@ class LayoutsScreen extends React.Component {
 
   sideMenu = () => Navigation.showModal({
     sideMenu: {
-      left: {
+      left: stack({
         component: {
           id: 'left',
           name: Screens.SideMenuLeft
         }
-      },
+      }),
       center: stack({
           component: {
             id: 'SideMenuCenter',
